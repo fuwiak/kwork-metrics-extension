@@ -5,5 +5,3 @@ export interface Metrics {
   earned: number;
   competition: string;
 }
-
-export default Metrics;
