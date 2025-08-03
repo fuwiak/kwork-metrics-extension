@@ -53,27 +53,47 @@
   }
 
   function createChart() {
-    if (!canvas || !metrics.length) return;
+    if (!canvas || !metrics.length) {
+      console.warn('Chart: missing canvas element or metrics', {
+        hasCanvas: !!canvas,
+        metricsLength: metrics.length
+      });
+      return;
+    }
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.error('Chart: failed to get 2D context');
+      return;
+    }
 
-    const data = prepareChartData();
-    const options = getChartOptions();
+    try {
+      const data = prepareChartData();
+      const options = getChartOptions();
 
-    chart = new Chart(ctx, {
-      type: type,
-      data,
-      options
-    });
+      chart = new Chart(ctx, {
+        type: type,
+        data,
+        options
+      });
+    } catch (error) {
+      console.error('Chart: error creating chart', error);
+    }
   }
 
   function updateChart() {
-    if (!chart) return;
+    if (!chart) {
+      console.warn('Chart: no chart instance to update');
+      return;
+    }
 
-    const data = prepareChartData();
-    chart.data = data;
-    chart.update();
+    try {
+      const data = prepareChartData();
+      chart.data = data;
+      chart.update();
+    } catch (error) {
+      console.error('Chart: error updating chart', error);
+    }
   }
 
   function prepareChartData(): ChartData<'line' | 'bar'> {
