@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Chart from "./Chart.svelte";
+  import { downloadLogs } from "../logger";
 
   interface Metrics {
     date: string;
@@ -225,6 +226,14 @@
     }
     return `${collectInterval}м`;
   }
+
+  function exportLogs() {
+    if (typeof chrome === "undefined") {
+      console.warn("Chrome APIs are not available.");
+      return;
+    }
+    downloadLogs();
+  }
 </script>
 
 <div class="container">
@@ -385,6 +394,9 @@
         </button>
         <button class="btn btn-export" on:click={copyToClipboard}>
           📋 Копировать
+        </button>
+        <button class="btn btn-export" on:click={exportLogs}>
+          🪵 Логи
         </button>
       </div>
       <button class="btn btn-danger" on:click={clearAllData}>

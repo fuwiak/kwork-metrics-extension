@@ -1,4 +1,5 @@
 import type { Metrics } from "./types";
+import { log } from "./logger";
 
 chrome.runtime.onInstalled.addListener(async () => {
   // Set default interval to 1 minute if not set
@@ -9,12 +10,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   chrome.alarms.clear("fetchMetrics");
   chrome.alarms.create("fetchMetrics", { periodInMinutes: interval });
   
-  console.log(`Auto-collect set to ${interval} minutes`);
+  await log(`Auto-collect set to ${interval} minutes`);
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "fetchMetrics") {
-    console.log('Auto-collecting metrics...');
+    await log('Auto-collecting metrics...');
     
     const tab = await chrome.tabs.create({ 
       url: "https://kwork.ru/manage_kworks", 
@@ -47,7 +48,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         lastUpdated: new Date().toISOString()
       });
       
-      console.log('Metrics saved:', message.data);
+      log('Metrics saved: ' + JSON.stringify(message.data));
     });
   }
   
@@ -56,6 +57,6 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     const newInterval = message.interval;
     chrome.alarms.clear("fetchMetrics");
     chrome.alarms.create("fetchMetrics", { periodInMinutes: newInterval });
-    console.log(`Interval updated to ${newInterval} minutes`);
+    log(`Interval updated to ${newInterval} minutes`);
   }
 });

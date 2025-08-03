@@ -3,7 +3,7 @@
   "name": "Kwork Metrics Tracker",
   "version": "1.0",
   "description": "Автоматический сбор метрик с Kwork",
-  "permissions": ["storage", "alarms", "scripting", "tabs"],
+  "permissions": ["storage", "alarms", "scripting", "tabs", "downloads"],
   "background": {
     "service_worker": "background.js"
   },
