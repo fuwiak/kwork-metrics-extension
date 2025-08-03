@@ -1,4 +1,11 @@
-import { log } from "./logger";
+// Inline logger to avoid module imports in content script
+async function log(message: string) {
+  console.log(message);
+  if (!chrome?.storage?.local) return;
+  const { logs = [] } = await chrome.storage.local.get(['logs']);
+  logs.push({ time: new Date().toISOString(), message });
+  await chrome.storage.local.set({ logs });
+}
 
 function getMetrics() {
   // More robust selectors for Kwork dashboard
