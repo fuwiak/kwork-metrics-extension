@@ -15,8 +15,7 @@
   "content_scripts": [
     {
       "matches": ["https://kwork.ru/manage_kworks*"],
-      "js": ["content.js"],
-      "type": "module"
+      "js": ["content.js"]
     }
   ]
 }
