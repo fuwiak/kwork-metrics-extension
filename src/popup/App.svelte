@@ -18,22 +18,40 @@
   let isUpdatingInterval = false;
 
   onMount(async () => {
+    // Chrome extension APIs are unavailable when the popup is
+    // opened outside of the extension context (for example during
+    // development or unit tests). Guard all usages so the component
+    // doesn't throw runtime errors like "chrome is not defined".
+    if (typeof chrome === "undefined") {
+      console.warn("Chrome APIs are not available.");
+      return;
+    }
+
     await loadMetrics();
     await loadSettings();
   });
 
   async function loadMetrics() {
+    if (!chrome?.storage?.local) return;
+
     const res = await chrome.storage.local.get(["metrics", "lastUpdated"]);
     metrics = res.metrics || [];
     lastUpdated = res.lastUpdated || "";
   }
 
   async function loadSettings() {
+    if (!chrome?.storage?.local) return;
+
     const res = await chrome.storage.local.get(['collectInterval']);
     collectInterval = res.collectInterval || 1;
   }
 
   async function collectDataNow() {
+    if (!chrome?.tabs || !chrome?.scripting) {
+      console.warn("Chrome APIs are not available.");
+      return;
+    }
+
     isCollecting = true;
     
     try {
@@ -82,6 +100,8 @@
   }
 
   async function clearAllData() {
+    if (typeof chrome === "undefined" || !chrome.storage?.local) return;
+
     if (confirm('Удалить все собранные данные?')) {
       await chrome.storage.local.remove(['metrics', 'lastUpdated']);
       metrics = [];
@@ -171,16 +191,21 @@
       return;
     }
 
+    if (!chrome?.storage?.local || !chrome.runtime) {
+      console.warn("Chrome APIs are not available.");
+      return;
+    }
+
     isUpdatingInterval = true;
 
     try {
       // Save to storage
       await chrome.storage.local.set({ collectInterval });
-      
+
       // Send message to background script to update alarm
-      chrome.runtime.sendMessage({ 
-        type: "UPDATE_INTERVAL", 
-        interval: collectInterval 
+      chrome.runtime.sendMessage({
+        type: "UPDATE_INTERVAL",
+        interval: collectInterval
       });
 
       alert(`Интервал автосбора обновлен: ${collectInterval} мин.`);
