@@ -1,3 +1,5 @@
+import { log } from "./logger";
+
 function getMetrics() {
   // More robust selectors for Kwork dashboard
   let views = "0";
@@ -62,7 +64,7 @@ function getMetrics() {
     competition = competitionElement.textContent?.trim() || "N/A";
   }
 
-  console.log('Extracted metrics:', { views, sales, earned, competition });
+  log('Extracted metrics: ' + JSON.stringify({ views, sales, earned, competition }));
 
   return {
     date: new Date().toISOString(),
