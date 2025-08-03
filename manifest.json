@@ -5,7 +5,8 @@
   "description": "Автоматический сбор метрик с Kwork",
   "permissions": ["storage", "alarms", "scripting", "tabs", "downloads"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "host_permissions": ["https://kwork.ru/manage_kworks*"],
   "action": {
@@ -14,7 +15,8 @@
   "content_scripts": [
     {
       "matches": ["https://kwork.ru/manage_kworks*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "type": "module"
     }
   ]
 }
